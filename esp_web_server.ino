@@ -7,20 +7,20 @@
 #include <Arduino_JSON.h>
 #include "LittleFS.h"
 
-// Replace with your network credentials
+// Conexion a la red
 const char* ssid = "JACFO_3509";
 const char* password = "473m25V+";
 
-// Create AsyncWebServer object on port 80
+// Crea un AsyncWebServer object en el puerto 80
 AsyncWebServer server(80);
 
-// Create an Event Source on /events
+// Crea un Event Source en /events
 AsyncEventSource events("/events");
 
-// Json Variable to Hold Sensor Readings
+// Variable Json que obtiene las lecturas del sensor
 JSONVar readings;
 
-// Timer variables
+// Variables
 unsigned long lastTime = 0;  
 unsigned long lastTimeTemperature = 0;
 unsigned long lastTimeAcc = 0;
@@ -28,7 +28,7 @@ unsigned long gyroDelay = 10;
 unsigned long temperatureDelay = 1000;
 unsigned long accelerometerDelay = 200;
 
-// Create a sensor object
+// Crea un objeto del sensor 
 Adafruit_MPU6050 mpu;
 
 sensors_event_t a, g, temp;
@@ -37,16 +37,16 @@ float gyroX, gyroY, gyroZ;
 float accX, accY, accZ;
 float temperature;
 
-//Gyroscope sensor deviation
+//Giroscopio desviacion (error) se puede ajustar a lo que se necesite
 float gyroXerror = 0.07;
 float gyroYerror = 0.03;
 float gyroZerror = 0.01;
 
 void initWiFi() {
-  Serial.println("Initializing WiFi...");
+  Serial.println("Iniciando WiFi...");
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-  Serial.print("Connecting to WiFi");
+  Serial.print("Conectando al WiFi");
   int attempts = 0;
   while (WiFi.status() != WL_CONNECTED && attempts < 20) {
     Serial.print(".");
@@ -55,37 +55,37 @@ void initWiFi() {
   }
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("");
-    Serial.println("Connected to WiFi");
+    Serial.println("Conectado al WiFi");
     Serial.println(WiFi.localIP());
   } else {
     Serial.println("");
-    Serial.println("Failed to connect to WiFi after 20 attempts");
+    Serial.println("Fallo al conectar al Wifi despues de 20 intentos");
   }
 }
 
 void initLittleFS() {
-  Serial.println("Initializing LittleFS...");
+  Serial.println("Iniciando LittleFs...");
   if (!LittleFS.begin()) {
-    Serial.println("An error has occurred while mounting LittleFS");
+    Serial.println("Un error Ocurrio muentra se montaba LittleFS");
   } else {
-    Serial.println("LittleFS mounted successfully");
+    Serial.println("LittleFS se monto exitosamente");
   }
 }
 
 void initMPU(){
-  Serial.println("Initializing MPU6050...");
+  Serial.println("Iniciando MPU6050...");
   if (!mpu.begin()) {
-    Serial.println("Failed to find MPU6050 chip");
+    Serial.println("Se fallo para encontrarel chip MPU6050");
     while (1) {
       delay(10);
     }
   }
-  Serial.println("MPU6050 Found!");
+  Serial.println("MPU6050 Encontrado!");
 }
 
 String getGyroReadings(){
   mpu.getEvent(&a, &g, &temp);
-  Serial.println("Getting gyro readings...");
+  Serial.println("Obteniendo las lecturas del giroscopio...");
   
   float gyroX_temp = g.gyro.x;
   if(abs(gyroX_temp) > gyroXerror)  {
@@ -112,7 +112,7 @@ String getGyroReadings(){
 
 String getAccReadings() {
   mpu.getEvent(&a, &g, &temp);
-  Serial.println("Getting accelerometer readings...");
+  Serial.println("Obteniendo las lecturas del acelerometro...");
   
   accX = a.acceleration.x;
   accY = a.acceleration.y;
@@ -128,7 +128,7 @@ String getAccReadings() {
 
 String getTemperature(){
   mpu.getEvent(&a, &g, &temp);
-  Serial.println("Getting temperature reading...");
+  Serial.println("Obteniendo lecturas de la temperatura...");
   
   temperature = temp.temperature;
   return String(temperature);
